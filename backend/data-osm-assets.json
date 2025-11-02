@@ -1,0 +1,233 @@
+[
+  {
+    "type": "health",
+    "name": "Civil Hospital",
+    "lat": 25.887958,
+    "lng": 78.3338968,
+    "tags": {
+      "addr:block": "Dabra",
+      "addr:district": "Gwalior",
+      "addr:full": "Civil Hospital Campus",
+      "addr:postcode": "475110",
+      "addr:state": "Madhya Pradesh",
+      "addr:street": "Dabra",
+      "addr:subdistrict": "Pichhore",
+      "amenity": "hospital",
+      "description": "Sub-District Hospital",
+      "healthcare": "hospital",
+      "locality": "Block Dabra",
+      "name": "Civil Hospital",
+      "source": "OpenGovernmentData"
+    }
+  },
+  {
+    "type": "health",
+    "name": "Sanskar Hospital",
+    "lat": 25.8857626,
+    "lng": 78.3322947,
+    "tags": {
+      "addr:district": "Dabra",
+      "addr:full": "Sarafa Bajar Road, Sarafa Bajar, Subhash Ganj, Dabra",
+      "addr:postcode": "475110",
+      "addr:state": "Madhya Pradesh",
+      "amenity": "hospital",
+      "name": "Sanskar Hospital",
+      "source": "OpenGovernmentData"
+    }
+  },
+  {
+    "type": "health",
+    "name": "Pathak Hospital",
+    "lat": 25.905622,
+    "lng": 78.329576,
+    "tags": {
+      "addr:district": "Gwalior",
+      "addr:full": "Dabra Jhansi Road, Gwalior",
+      "addr:postcode": "475110",
+      "addr:state": "Madhya Pradesh",
+      "amenity": "hospital",
+      "name": "Pathak Hospital",
+      "source": "OpenGovernmentData"
+    }
+  },
+  {
+    "type": "finance",
+    "name": "UCO Bank",
+    "lat": 25.8858097,
+    "lng": 78.331068,
+    "tags": {
+      "amenity": "bank",
+      "brand": "UCO Bank",
+      "brand:wikidata": "Q2005310",
+      "brand:wikipedia": "en:UCO Bank",
+      "name": "UCO Bank"
+    }
+  },
+  {
+    "type": "health",
+    "name": "Kurele Hospital",
+    "lat": 25.8859786,
+    "lng": 78.3352917,
+    "tags": {
+      "amenity": "hospital",
+      "healthcare": "hospital",
+      "name": "Kurele Hospital"
+    }
+  },
+  {
+    "type": "finance",
+    "name": "Punjab National Bank",
+    "lat": 25.8867855,
+    "lng": 78.3345321,
+    "tags": {
+      "amenity": "bank",
+      "brand": "Punjab National Bank",
+      "brand:wikidata": "Q2743499",
+      "brand:wikipedia": "en:Punjab National Bank",
+      "name": "Punjab National Bank"
+    }
+  },
+  {
+    "type": "finance",
+    "name": "Bank of India",
+    "lat": 25.886967,
+    "lng": 78.3337725,
+    "tags": {
+      "addr:city": "Dabra",
+      "amenity": "bank",
+      "brand": "Bank of India",
+      "brand:wikidata": "Q2004439",
+      "brand:wikipedia": "en:Bank of India",
+      "name": "Bank of India"
+    }
+  },
+  {
+    "type": "health",
+    "name": null,
+    "lat": 25.8857053,
+    "lng": 78.3354427,
+    "tags": {
+      "amenity": "hospital",
+      "healthcare": "hospital"
+    }
+  },
+  {
+    "type": "finance",
+    "name": "Indore Citizen Sakh Sahkarita Sanstha",
+    "lat": 25.8865715,
+    "lng": 78.3348169,
+    "tags": {
+      "amenity": "bank",
+      "name": "Indore Citizen Sakh Sahkarita Sanstha"
+    }
+  },
+  {
+    "type": "finance",
+    "name": "CANARA BANK ATM",
+    "lat": 25.8830793,
+    "lng": 78.333347,
+    "tags": {
+      "amenity": "bank",
+      "name": "CANARA BANK ATM"
+    }
+  },
+  {
+    "type": "finance",
+    "name": "Bank of India",
+    "lat": 25.8861024,
+    "lng": 78.3321454,
+    "tags": {
+      "amenity": "bank",
+      "brand": "Bank of India",
+      "brand:wikidata": "Q2004439",
+      "brand:wikipedia": "en:Bank of India",
+      "name": "Bank of India"
+    }
+  },
+  {
+    "type": "health",
+    "name": "DR. Anant Ketkar",
+    "lat": 25.883143,
+    "lng": 78.3311197,
+    "tags": {
+      "amenity": "hospital",
+      "healthcare": "hospital",
+      "name": "DR. Anant Ketkar"
+    }
+  },
+  {
+    "type": "finance",
+    "name": "L M N S Bank",
+    "lat": 25.8832279,
+    "lng": 78.3322934,
+    "tags": {
+      "amenity": "bank",
+      "name": "L M N S Bank"
+    }
+  },
+  {
+    "type": "finance",
+    "name": "State Bank ATM",
+    "lat": 25.8827453,
+    "lng": 78.3309781,
+    "tags": {
+      "amenity": "bank",
+      "name": "State Bank ATM"
+    }
+  },
+  {
+    "type": "finance",
+    "name": "SBI BANK ATM",
+    "lat": 25.8876531,
+    "lng": 78.3376057,
+    "tags": {
+      "amenity": "bank",
+      "name": "SBI BANK ATM"
+    }
+  },
+  {
+    "type": "finance",
+    "name": "State Bank of India",
+    "lat": 25.8875836,
+    "lng": 78.3339739,
+    "tags": {
+      "amenity": "bank",
+      "brand": "State Bank of India",
+      "brand:wikidata": "Q1340361",
+      "brand:wikipedia": "en:State Bank of India",
+      "name": "State Bank of India"
+    }
+  },
+  {
+    "type": "school",
+    "name": "Sant Kanwar School",
+    "lat": 25.8850203,
+    "lng": 78.3343978,
+    "tags": {
+      "amenity": "school",
+      "name": "Sant Kanwar School"
+    }
+  },
+  {
+    "type": "health",
+    "name": "KK Hospital",
+    "lat": 25.8858274,
+    "lng": 78.3360017,
+    "tags": {
+      "amenity": "hospital",
+      "healthcare": "hospital",
+      "name": "KK Hospital"
+    }
+  },
+  {
+    "type": "health",
+    "name": "Dr. DS Thakur Hospital",
+    "lat": 25.8858235,
+    "lng": 78.3369365,
+    "tags": {
+      "amenity": "hospital",
+      "healthcare": "hospital",
+      "name": "Dr. DS Thakur Hospital"
+    }
+  }
+]

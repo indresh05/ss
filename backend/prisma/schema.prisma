@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  phone     String   @unique
+  role      String
+  createdAt DateTime @default(now())
+  issues    Issue[]  @relation("UserIssues")
+}
+
+model Issue {
+  id          Int          @id @default(autoincrement())
+  category    String
+  description String
+  lat         Float
+  lng         Float
+  status      String       @default("Created")
+  createdAt   DateTime     @default(now())
+  createdBy   User?        @relation("UserIssues", fields: [createdById], references: [id])
+  createdById Int?
+  events      Event[]
+  attachments Attachment[]
+}
+
+model Event {
+  id      Int      @id @default(autoincrement())
+  status  String
+  at      DateTime @default(now())
+  issue   Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  issueId Int
+  byPhone String?
+}
+
+model Otp {
+  id        Int      @id @default(autoincrement())
+  phone     String   @unique
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  attempts  Int      @default(0)
+
+  @@index([phone])
+}
+
+model Attachment {
+  id        Int      @id @default(autoincrement())
+  issue     Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  issueId   Int
+  filename  String
+  mime      String
+  size      Int
+  createdAt DateTime @default(now())
+
+  @@index([issueId])
+}
+
+model InfrastructureAsset {
+  id        Int      @id @default(autoincrement())
+  type      String
+  name      String?
+  lat       Float
+  lng       Float
+  tags      Json?
+  source    String   @default("osm")
+  createdAt DateTime @default(now())
+
+  @@index([type])
+}

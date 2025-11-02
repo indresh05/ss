@@ -1,0 +1,1467 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>GramSetu – Rural Governance Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <style>
+    :root {
+      /* Shades tuned to your screenshot */
+      --primary: #67C67D;        /* mint button */
+      --primary-700: #4FB367;    /* hover mint */
+      --bg: #eef5fb;             /* base canvas */
+      --panel: rgba(255,255,255,0.86);  /* glass card */
+      --panel-border: rgba(255,255,255,0.75);
+      --border: #e6edf4;
+      --muted: #6f7f8d;
+      --text: #0e2536;
+      --ring: rgba(103,198,125,.28);
+      --shadow-sm: 0 6px 18px rgba(16, 39, 60, .06);
+      --shadow: 0 16px 42px rgba(16,39,60,.10);
+      --mint: rgba(148, 226, 183, .55);
+      --sky:  rgba(168, 211, 247, .55);
+      --cream: rgba(252, 239, 219, .90);
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', 'Noto Sans Devanagari', 'Noto Sans Bengali', 'Noto Sans Telugu', 'Noto Sans Tamil', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, sans-serif;
+      max-width: 1180px; margin: 28px auto; padding: 0 16px; color: var(--text);
+      background:
+        radial-gradient(1000px 600px at 15% 0%, var(--mint), transparent 60%),
+        radial-gradient(1100px 650px at 82% 8%, var(--sky), transparent 60%),
+        radial-gradient(1200px 780px at 100% 110%, var(--cream), transparent 60%),
+        var(--bg);
+    }
+
+    /* Language Selector Dropdown */
+    .lang-selector {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px) saturate(120%);
+      -webkit-backdrop-filter: blur(12px) saturate(120%);
+      min-width: 160px;
+    }
+
+    .lang-selector label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .lang-selector select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(103,198,125,.15);
+    }
+
+    .lang-selector select:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(103,198,125,.25);
+    }
+
+    .lang-selector select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    .lang-selector select option {
+      padding: 10px;
+      background: white;
+      color: var(--text);
+    }
+
+    /* Language flag/icon indicator */
+    .lang-icon {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      vertical-align: middle;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-700) 100%);
+      box-shadow: 0 2px 6px rgba(103,198,125,.3);
+    }
+
+    /* Header with a mint droplet/leaf */
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      justify-content: center; margin: 0 0 14px;
+    }
+    .logo-leaf {
+      width: 24px; height: 24px;
+      filter: drop-shadow(0 4px 10px rgba(103,198,125,.35));
+      transform-origin: 50% 100%;
+      animation: sway 3.2s ease-in-out infinite alternate;
+    }
+    @keyframes sway {
+      0% { transform: rotate(-6deg) translateY(0); }
+      100% { transform: rotate(6deg) translateY(-1px); }
+    }
+    @media (prefers-reduced-motion: reduce) { .logo-leaf { animation: none; } }
+    h2 { margin: 0; letter-spacing: .2px; text-align: center; }
+
+    /* Landing Page Styles */
+    .landing-hero {
+      text-align: center;
+      padding: 40px 20px 30px;
+    }
+    .landing-hero .logo-leaf {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+    }
+    .landing-hero h1 {
+      font-size: 3rem;
+      margin: 0 0 12px;
+      background: linear-gradient(135deg, #67C67D 0%, #4FB367 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .landing-hero .tagline {
+      font-size: 1.25rem;
+      color: var(--muted);
+      margin: 0 0 16px;
+      font-weight: 500;
+    }
+    .landing-hero .description {
+      max-width: 680px;
+      margin: 0 auto 40px;
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 1.05rem;
+    }
+
+    .portal-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .portal-card {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 20px;
+      padding: 32px 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px) saturate(120%);
+      -webkit-backdrop-filter: blur(12px) saturate(120%);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .portal-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(16,39,60,.15);
+    }
+
+    .portal-card .icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #67C67D 0%, #4FB367 100%);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(103,198,125,.3);
+    }
+
+    .portal-card .icon svg {
+      width: 36px;
+      height: 36px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,.1));
+    }
+
+    .portal-card h3 {
+      margin: 0 0 12px;
+      font-size: 1.5rem;
+      color: var(--text);
+    }
+
+    .portal-card p {
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0 0 24px;
+      font-size: 0.95rem;
+    }
+
+    .portal-card .enter-btn {
+      width: 100%;
+      padding: 14px 24px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #6dcc83 0%, #59b96e 100%);
+      color: #fff;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 10px 26px rgba(103,198,125,.24);
+      transition: all 0.2s ease;
+    }
+
+    .portal-card .enter-btn:hover {
+      filter: brightness(1.05);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(103,198,125,.35);
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      max-width: 900px;
+      margin: 50px auto 0;
+    }
+
+    .feature-item {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 24px 20px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .feature-item .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+
+    .feature-item h4 {
+      margin: 0 0 8px;
+      color: var(--text);
+      font-size: 1.1rem;
+    }
+
+    .feature-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      color: var(--text);
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(10px);
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background: rgba(255,255,255,.95);
+      transform: translateX(-2px);
+    }
+
+    /* Tabs (glass, with mint active) */
+    .tabs {
+      display: flex; gap: 8px; margin: 16px auto 20px; padding: 6px 8px;
+      background: var(--panel); border: 1px solid var(--panel-border);
+      backdrop-filter: blur(10px) saturate(120%); -webkit-backdrop-filter: blur(10px) saturate(120%);
+      border-radius: 14px; box-shadow: var(--shadow-sm); width: fit-content;
+    }
+    .tab {
+      padding: 10px 14px; border-radius: 12px; cursor: pointer; user-select: none; border: 0; background: transparent;
+      color: var(--muted);
+      transition: color .25s ease, background .25s ease, transform .16s ease, box-shadow .25s ease;
+    }
+    .tab:hover { color: var(--text); background: rgba(255,255,255,.75); box-shadow: 0 6px 16px rgba(103,198,125,.10); }
+    .tab.active {
+      background: var(--primary); color: #fff; box-shadow: 0 8px 18px rgba(103,198,125,.25); transform: translateY(-1px);
+    }
+
+    /* Panels (glassy + soft fade-in) */
+    .panel {
+      display: none; background: var(--panel); border: 1px solid var(--panel-border);
+      border-radius: 16px; padding: 16px; box-shadow: var(--shadow);
+      backdrop-filter: blur(12px) saturate(120%); -webkit-backdrop-filter: blur(12px) saturate(120%);
+      opacity: 0; transform: translateY(6px); transition: opacity .35s ease, transform .35s ease;
+    }
+    .panel.active { display: block; opacity: 1; transform: translateY(0); }
+
+    label { font-size: 14px; color: var(--muted); display: block; margin-top: 8px; margin-bottom: 6px; }
+
+    /* Inputs */
+    input, select, textarea, button {
+      width: 100%; padding: 12px 12px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,.95);
+      transition: border-color .2s, box-shadow .2s, background .2s, transform .02s;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    input::placeholder, textarea::placeholder { color: #9aa8b6; }
+    input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    /* Buttons – mint filled like your screenshot */
+    button {
+      background: linear-gradient(180deg, #6dcc83 0%, #59b96e 100%);
+      color: #fff; font-weight: 600; letter-spacing: .2px; border: 0;
+      box-shadow: 0 10px 26px rgba(103,198,125,.24);
+      cursor: pointer;
+    }
+    button:hover { filter: brightness(1.03); transform: translateY(-1px); box-shadow: 0 14px 30px rgba(103,198,125,.30); }
+    button:active { transform: translateY(0); }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+
+    /* Secondary buttons (glass) */
+    #f_clear, #a_refresh {
+      background: rgba(255,255,255,.95); color: var(--text); border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    #f_clear:hover, #a_refresh:hover { background: #ffffff; }
+
+    .muted { color: var(--muted); font-size: 14px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* Map (glassy) */
+    #map {
+      height: 440px; width: 100%; border-radius: 16px; border: 1px solid var(--panel-border); margin-top: 12px; box-shadow: var(--shadow);
+      background: rgba(255,255,255,.75);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    }
+    .legend {
+      font-size: 12px; background: rgba(255,255,255,.9); padding: 8px 10px; border: 1px solid var(--panel-border);
+      border-radius: 12px; box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    }
+    .legend div { margin: 6px 0; display: flex; align-items: center; gap: 8px; }
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: middle; }
+
+    /* Thumbnails */
+    .thumb { width: 64px; height: 64px; object-fit: cover; border: 1px solid var(--border); border-radius: 12px; margin-right: 6px; box-shadow: var(--shadow-sm); background: #fff; }
+    .thumbs { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* Filters + chips */
+    .filters { display: grid; grid-template-columns: 1.1fr 1.2fr .9fr .9fr 1.5fr .9fr; gap: 12px; margin: 12px 0; align-items: end; }
+    .status-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip {
+      display: flex; align-items: center; gap: 8px; border: 1px dashed var(--border); padding: 8px 10px; border-radius: 999px;
+      background: rgba(255,255,255,.9); box-shadow: var(--shadow-sm); font-size: 14px; transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .chip:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(21,94,117,.08); }
+
+    .headerline { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+    #a_count { font-weight: 600; color: var(--muted); }
+
+    /* Soft alerts */
+    .ok, .err {
+      display: inline-block; padding: 8px 12px; border-radius: 10px; border: 1px solid transparent; margin-top: 8px;
+      backdrop-filter: blur(6px);
+    }
+    .ok { color: #116a5b; background: rgba(193, 245, 225, .5); border-color: rgba(103,198,125,.3); }
+    .err { color: #b42318; background: rgba(255, 235, 230, .7); border-color: #f6b2a6; }
+
+    /* Table (glass, gentle zebra) */
+    table {
+      border-collapse: separate; border-spacing: 0; width: 100%; background: rgba(255,255,255,.96);
+      border: 1px solid var(--panel-border); border-radius: 14px; overflow: hidden; margin-top: 12px; box-shadow: var(--shadow);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    }
+    th, td { padding: 10px 12px; vertical-align: top; border-bottom: 1px solid var(--border); }
+    th { background: rgba(255,255,255,.92); text-align: left; font-weight: 600; position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) { background: rgba(255,255,255,.75); }
+    tbody tr:hover { background: rgba(103,198,125,.06); }
+
+    /* Action buttons in table */
+    td button { padding: 8px 10px; border-radius: 10px; font-size: 13px; margin-right: 6px; color: #fff; }
+    td button[data-s="Assigned"] { background: #f5b44e; }
+    td button[data-s="InProgress"] { background: #f08b3e; }
+    td button[data-s="Resolved"] { background: #2eaf6e; }
+
+    /* Popup buttons on map */
+    .leaflet-popup-content button { display: inline-block; width: auto; margin-right: 6px; }
+    .leaflet-popup-content [id^="pp-assign-"] { background: #f5b44e; color: #fff; }
+    .leaflet-popup-content [id^="pp-prog-"] { background: #f08b3e; color: #fff; }
+    .leaflet-popup-content [id^="pp-res-"] { background: #2eaf6e; color: #fff; }
+
+    /* Responsive */
+    @media (max-width: 880px) { 
+      .row { grid-template-columns: 1fr; } 
+      .filters { grid-template-columns: 1fr; }
+      .landing-hero h1 { font-size: 2.2rem; }
+      .portal-cards { grid-template-columns: 1fr; }
+      .lang-selector {
+        top: 10px;
+        left: 10px;
+        padding: 8px 10px;
+        min-width: 140px;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- Language Selector Dropdown -->
+  <div class="lang-selector">
+    <label>
+      <span class="lang-icon"></span>
+      <span data-translate="selectLanguage">Language</span>
+    </label>
+    <select id="languageSelect">
+      <option value="en">English</option>
+      <option value="hi">हिन्दी (Hindi)</option>
+      <option value="bn">বাংলা (Bengali)</option>
+      <option value="te">తెలుగు (Telugu)</option>
+      <option value="mr">मराठी (Marathi)</option>
+      <option value="ta">தமிழ் (Tamil)</option>
+    </select>
+  </div>
+
+  <!-- Landing Page -->
+  <div id="landing" class="panel active">
+    <div class="landing-hero">
+      <svg class="logo-leaf" viewBox="0 0 24 24" aria-hidden="true">
+        <defs>
+          <linearGradient id="leafG" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#67C67D"/>
+            <stop offset="100%" stop-color="#9fe1ae"/>
+          </linearGradient>
+        </defs>
+        <path fill="url(#leafG)" d="M12 2c3.5 3.8 6 7 6 10.1A6 6 0 1 1 6 12.1C6 9 8.5 5.8 12 2z"/>
+        <path d="M6.5 16.5c2.6-2.7 5.5-4.7 8.8-5.9" stroke="#4FB367" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      </svg>
+      
+      <h1 data-translate="appName">GramSetu</h1>
+      <p class="tagline" data-translate="tagline">Empowering Rural Communities Through Technology</p>
+      
+      <p class="description" data-translate="description">
+        A comprehensive platform connecting citizens with local governance for transparent and efficient issue resolution.
+      </p>
+    </div>
+
+    <div class="portal-cards">
+      <!-- Citizen Portal Card -->
+      <div class="portal-card" onclick="showPanel('citizen')">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="white">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </div>
+        <h3 data-translate="citizenPortal">Citizen Portal</h3>
+        <p data-translate="citizenDesc">Report issues in your community with photos and location. Track the status of your complaints and get real-time updates on resolutions.</p>
+        <button class="enter-btn" data-translate="enterCitizen">Enter Citizen Portal →</button>
+      </div>
+
+      <!-- Admin Portal Card -->
+      <div class="portal-card" onclick="showPanel('admin')">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="white">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+          </svg>
+        </div>
+        <h3 data-translate="adminDashboard">Admin Dashboard</h3>
+        <p data-translate="adminDesc">Manage and resolve community issues efficiently. View all reports on an interactive map, filter by category, and update status in real-time.</p>
+        <button class="enter-btn" data-translate="enterAdmin">Enter Admin Portal →</button>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feature-item">
+        <div class="feature-icon">🔒</div>
+        <h4 data-translate="blockchain">Blockchain Secured</h4>
+        <p data-translate="blockchainDesc">Every transaction is recorded on blockchain for complete transparency</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📍</div>
+        <h4 data-translate="gps">GPS Location</h4>
+        <p data-translate="gpsDesc">Precise location tracking of issues for faster response</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <h4 data-translate="tracking">Real-time Tracking</h4>
+        <p data-translate="trackingDesc">Monitor issue status from creation to resolution</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Citizen Panel -->
+  <div id="citizen" class="panel">
+    <button class="back-btn" onclick="showPanel('landing')">
+      <span data-translate="backHome">← Back to Home</span>
+    </button>
+    
+    <div class="brand">
+      <svg class="logo-leaf" viewBox="0 0 24 24" aria-hidden="true">
+        <defs>
+          <linearGradient id="leafG2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#67C67D"/>
+            <stop offset="100%" stop-color="#9fe1ae"/>
+          </linearGradient>
+        </defs>
+        <path fill="url(#leafG2)" d="M12 2c3.5 3.8 6 7 6 10.1A6 6 0 1 1 6 12.1C6 9 8.5 5.8 12 2z"/>
+        <path d="M6.5 16.5c2.6-2.7 5.5-4.7 8.8-5.9" stroke="#4FB367" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      </svg>
+      <h2 data-translate="citizenHeader">Citizen Portal – Report Issues</h2>
+    </div>
+
+    <h3 data-translate="reportProblem">Report a Problem</h3>
+    <div class="row">
+      <div>
+        <label data-translate="phone">Phone</label>
+        <input id="c_phone" data-translate-placeholder="phonePlaceholder" placeholder="e.g., 9999999999" />
+      </div>
+      <div>
+        <label data-translate="otp">OTP</label>
+        <input id="c_otp" data-translate-placeholder="otpPlaceholder" placeholder="6-digit OTP" />
+      </div>
+    </div>
+    <div class="row">
+      <button id="c_getOtp" data-translate="getOtp">Get OTP</button>
+      <button id="c_login" data-translate="verifyLogin">Verify & Login</button>
+    </div>
+    <p id="c_authMsg" class="muted" data-translate="authInstructions">Enter phone → Get OTP → enter code → Verify & Login</p>
+
+    <label data-translate="category">Category</label>
+    <select id="c_category">
+      <option data-translate="water">Water</option>
+      <option data-translate="road">Road</option>
+      <option data-translate="health">Health</option>
+      <option data-translate="electricity">Electricity</option>
+    </select>
+
+    <label data-translate="description">Description</label>
+    <textarea id="c_desc" data-translate-placeholder="descPlaceholder" placeholder="Describe the issue"></textarea>
+
+    <label data-translate="photo">Photo (optional)</label>
+    <input id="c_photo" type="file" accept="image/*" capture="environment" />
+    <div id="c_previewWrap" class="thumbs"></div>
+
+    <button id="c_submit" data-translate="submitIssue">Submit Issue</button>
+    <p id="c_msg" class="muted"></p>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="admin" class="panel">
+    <button class="back-btn" onclick="showPanel('landing')">
+      <span data-translate="backHome">← Back to Home</span>
+    </button>
+    
+    <div class="headerline">
+      <div class="brand">
+        <svg class="logo-leaf" viewBox="0 0 24 24" aria-hidden="true">
+          <defs>
+            <linearGradient id="leafG3" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#67C67D"/>
+              <stop offset="100%" stop-color="#9fe1ae"/>
+            </linearGradient>
+          </defs>
+          <path fill="url(#leafG3)" d="M12 2c3.5 3.8 6 7 6 10.1A6 6 0 1 1 6 12.1C6 9 8.5 5.8 12 2z"/>
+          <path d="M6.5 16.5c2.6-2.7 5.5-4.7 8.8-5.9" stroke="#4FB367" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        </svg>
+        <h2 data-translate="adminHeader">Admin Dashboard – Manage Issues</h2>
+      </div>
+      <div id="a_count" class="muted"></div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label data-translate="adminPhone">Admin Phone (use 8888888888 for admin role)</label>
+        <input id="a_phone" value="8888888888" />
+      </div>
+      <div>
+        <label data-translate="otp">OTP</label>
+        <input id="a_otp" data-translate-placeholder="otpPlaceholder" placeholder="6-digit OTP" />
+      </div>
+    </div>
+    <div class="row">
+      <button id="a_getOtp" data-translate="getOtp">Get OTP</button>
+      <button id="a_login" data-translate="verifyLogin">Verify & Login</button>
+    </div>
+    <p id="a_msg" class="muted" data-translate="loginToLoad">Login to load issues</p>
+
+    <!-- Filters -->
+    <div class="filters">
+      <div>
+        <label data-translate="category">Category</label>
+        <select id="f_category">
+          <option data-translate="all">All</option>
+          <option data-translate="water">Water</option>
+          <option data-translate="road">Road</option>
+          <option data-translate="health">Health</option>
+          <option data-translate="electricity">Electricity</option>
+        </select>
+      </div>
+      <div>
+        <label data-translate="search">Search</label>
+        <input id="f_q" data-translate-placeholder="searchPlaceholder" placeholder="text in category/description" />
+      </div>
+      <div>
+        <label data-translate="from">From</label>
+        <input id="f_from" type="date" />
+      </div>
+      <div>
+        <label data-translate="to">To</label>
+        <input id="f_to" type="date" />
+      </div>
+      <div>
+        <label data-translate="status">Status</label>
+        <div class="status-chips">
+          <label class="chip"><input type="checkbox" class="f_status" value="Created" checked><span class="dot" style="background:#1e90ff"></span><span data-translate="created">Created</span></label>
+          <label class="chip"><input type="checkbox" class="f_status" value="Assigned" checked><span class="dot" style="background:#f5b44e"></span><span data-translate="assigned">Assigned</span></label>
+          <label class="chip"><input type="checkbox" class="f_status" value="InProgress" checked><span class="dot" style="background:#f08b3e"></span><span data-translate="inProgress">In Progress</span></label>
+          <label class="chip"><input type="checkbox" class="f_status" value="Resolved" checked><span class="dot" style="background:#2eaf6e"></span><span data-translate="resolved">Resolved</span></label>
+        </div>
+      </div>
+      <div>
+        <button id="f_apply" data-translate="applyFilters">Apply Filters</button>
+        <button id="f_clear" data-translate="clear">Clear</button>
+        <button id="a_refresh" data-translate="refresh">Refresh</button>
+      </div>
+    </div>
+
+    <div id="map"></div>
+
+    <table>
+      <thead>
+        <tr>
+          <th data-translate="id">ID</th>
+          <th data-translate="category">Category</th>
+          <th data-translate="status">Status</th>
+          <th data-translate="created">Created</th>
+          <th data-translate="lat">Lat</th>
+          <th data-translate="lng">Lng</th>
+          <th data-translate="photos">Photos</th>
+          <th data-translate="actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="a_tbody"></tbody>
+    </table>
+  </div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <script>
+    // ----- Language Translations (6 Indian Languages) -----
+    const translations = {
+      en: {
+        selectLanguage: "Language",
+        appName: "GramSetu",
+        tagline: "Empowering Rural Communities Through Technology",
+        description: "A comprehensive platform connecting citizens with local governance for transparent and efficient issue resolution.",
+        citizenPortal: "Citizen Portal",
+        citizenDesc: "Report issues in your community with photos and location. Track the status of your complaints and get real-time updates on resolutions.",
+        enterCitizen: "Enter Citizen Portal →",
+        adminDashboard: "Admin Dashboard",
+        adminDesc: "Manage and resolve community issues efficiently. View all reports on an interactive map, filter by category, and update status in real-time.",
+        enterAdmin: "Enter Admin Portal →",
+        blockchain: "Blockchain Secured",
+        blockchainDesc: "Every transaction is recorded on blockchain for complete transparency",
+        gps: "GPS Location",
+        gpsDesc: "Precise location tracking of issues for faster response",
+        tracking: "Real-time Tracking",
+        trackingDesc: "Monitor issue status from creation to resolution",
+        backHome: "← Back to Home",
+        citizenHeader: "Citizen Portal – Report Issues",
+        reportProblem: "Report a Problem",
+        phone: "Phone",
+        phonePlaceholder: "e.g., 9999999999",
+        otp: "OTP",
+        otpPlaceholder: "6-digit OTP",
+        getOtp: "Get OTP",
+        verifyLogin: "Verify & Login",
+        authInstructions: "Enter phone → Get OTP → enter code → Verify & Login",
+        category: "Category",
+        water: "Water",
+        road: "Road",
+        health: "Health",
+        electricity: "Electricity",
+        description: "Description",
+        descPlaceholder: "Describe the issue",
+        photo: "Photo (optional)",
+        submitIssue: "Submit Issue",
+        adminHeader: "Admin Dashboard – Manage Issues",
+        adminPhone: "Admin Phone (use 8888888888 for admin role)",
+        loginToLoad: "Login to load issues",
+        all: "All",
+        search: "Search",
+        searchPlaceholder: "text in category/description",
+        from: "From",
+        to: "To",
+        status: "Status",
+        created: "Created",
+        assigned: "Assigned",
+        inProgress: "In Progress",
+        resolved: "Resolved",
+        applyFilters: "Apply Filters",
+        clear: "Clear",
+        refresh: "Refresh",
+        id: "ID",
+        lat: "Lat",
+        lng: "Lng",
+        photos: "Photos",
+        actions: "Actions",
+        assign: "Assign",
+        progress: "In Progress",
+        resolve: "Resolve",
+        showing: "Showing",
+        issues: "issue(s)",
+        loaded: "Loaded"
+      },
+      hi: {
+        selectLanguage: "भाषा",
+        appName: "ग्रामसेतु",
+        tagline: "प्रौद्योगिकी के माध्यम से ग्रामीण समुदायों को सशक्त बनाना",
+        description: "पारदर्शी और कुशल समस्या समाधान के लिए नागरिकों को स्थानीय शासन से जोड़ने वाला एक व्यापक मंच।",
+        citizenPortal: "नागरिक पोर्टल",
+        citizenDesc: "फोटो और स्थान के साथ अपने समुदाय में समस्याओं की रिपोर्ट करें। अपनी शिकायतों की स्थिति को ट्रैक करें और समाधान पर वास्तविक समय अपडेट प्राप्त करें।",
+        enterCitizen: "नागरिक पोर्टल में प्रवेश करें →",
+        adminDashboard: "व्यवस्थापक डैशबोर्ड",
+        adminDesc: "सामुदायिक मुद्दों को कुशलतापूर्वक प्रबंधित और हल करें। इंटरैक्टिव मानचित्र पर सभी रिपोर्ट देखें, श्रेणी के अनुसार फ़िल्टर करें और वास्तविक समय में स्थिति अपडेट करें।",
+        enterAdmin: "व्यवस्थापक पोर्टल में प्रवेश करें →",
+        blockchain: "ब्लॉकचेन सुरक्षित",
+        blockchainDesc: "पूर्ण पारदर्शिता के लिए प्रत्येक लेनदेन ब्लॉकचेन पर दर्ज किया जाता है",
+        gps: "जीपीएस स्थान",
+        gpsDesc: "तेजी से प्रतिक्रिया के लिए समस्याओं का सटीक स्थान ट्रैकिंग",
+        tracking: "वास्तविक समय ट्रैकिंग",
+        trackingDesc: "निर्माण से समाधान तक समस्या की स्थिति की निगरानी करें",
+        backHome: "← होम पर वापस जाएं",
+        citizenHeader: "नागरिक पोर्टल – समस्याओं की रिपोर्ट करें",
+        reportProblem: "समस्या की रिपोर्ट करें",
+        phone: "फोन",
+        phonePlaceholder: "उदा., 9999999999",
+        otp: "ओटीपी",
+        otpPlaceholder: "6-अंकीय ओटीपी",
+        getOtp: "ओटीपी प्राप्त करें",
+        verifyLogin: "सत्यापित करें और लॉगिन करें",
+        authInstructions: "फोन दर्ज करें → ओटीपी प्राप्त करें → कोड दर्ज करें → सत्यापित करें और लॉगिन करें",
+        category: "श्रेणी",
+        water: "पानी",
+        road: "सड़क",
+        health: "स्वास्थ्य",
+        electricity: "बिजली",
+        description: "विवरण",
+        descPlaceholder: "समस्या का वर्णन करें",
+        photo: "फोटो (वैकल्पिक)",
+        submitIssue: "समस्या सबमिट करें",
+        adminHeader: "व्यवस्थापक डैशबोर्ड – समस्याओं का प्रबंधन करें",
+        adminPhone: "व्यवस्थापक फोन (व्यवस्थापक भूमिका के लिए 8888888888 का उपयोग करें)",
+        loginToLoad: "समस्याएं लोड करने के लिए लॉगिन करें",
+        all: "सभी",
+        search: "खोजें",
+        searchPlaceholder: "श्रेणी/विवरण में पाठ",
+        from: "से",
+        to: "तक",
+        status: "स्थिति",
+        created: "बनाया गया",
+        assigned: "सौंपा गया",
+        inProgress: "प्रगति में",
+        resolved: "हल किया गया",
+        applyFilters: "फ़िल्टर लागू करें",
+        clear: "साफ़ करें",
+        refresh: "रिफ्रेश करें",
+        id: "आईडी",
+        lat: "अक्षांश",
+        lng: "देशांतर",
+        photos: "फोटो",
+        actions: "कार्रवाई",
+        assign: "सौंपें",
+        progress: "प्रगति में",
+        resolve: "हल करें",
+        showing: "दिखाया जा रहा है",
+        issues: "समस्याएं",
+        loaded: "लोड किया गया"
+      },
+      bn: {
+        selectLanguage: "ভাষা",
+        appName: "গ্রামসেতু",
+        tagline: "প্রযুক্তির মাধ্যমে গ্রামীণ সম্প্রদায়কে ক্ষমতায়ন",
+        description: "স্বচ্ছ এবং দক্ষ সমস্যা সমাধানের জন্য নাগরিকদের স্থানীয় শাসনের সাথে সংযুক্ত করার একটি ব্যাপক প্ল্যাটফর্ম।",
+        citizenPortal: "নাগরিক পোর্টাল",
+        citizenDesc: "ফটো এবং অবস্থান সহ আপনার সম্প্রদায়ের সমস্যাগুলি রিপোর্ট করুন। আপনার অভিযোগের স্থিতি ট্র্যাক করুন এবং সমাধানের রিয়েল-টাইম আপডেট পান।",
+        enterCitizen: "নাগরিক পোর্টালে প্রবেশ করুন →",
+        adminDashboard: "অ্যাডমিন ড্যাশবোর্ড",
+        adminDesc: "সম্প্রদায়ের সমস্যাগুলি দক্ষভাবে পরিচালনা এবং সমাধান করুন। একটি ইন্টারঅ্যাক্টিভ মানচিত্রে সমস্ত রিপোর্ট দেখুন, বিভাগ অনুসারে ফিল্টার করুন এবং রিয়েল-টাইমে স্থিতি আপডেট করুন।",
+        enterAdmin: "অ্যাডমিন পোর্টালে প্রবেশ করুন →",
+        blockchain: "ব্লকচেন সুরক্ষিত",
+        blockchainDesc: "সম্পূর্ণ স্বচ্ছতার জন্য প্রতিটি লেনদেন ব্লকচেনে রেকর্ড করা হয়",
+        gps: "জিপিএস অবস্থান",
+        gpsDesc: "দ্রুত প্রতিক্রিয়ার জন্য সমস্যার সুনির্দিষ্ট অবস্থান ট্র্যাকিং",
+        tracking: "রিয়েল-টাইম ট্র্যাকিং",
+        trackingDesc: "তৈরি থেকে সমাধান পর্যন্ত সমস্যার স্থিতি পর্যবেক্ষণ করুন",
+        backHome: "← হোমে ফিরে যান",
+        citizenHeader: "নাগরিক পোর্টাল – সমস্যা রিপোর্ট করুন",
+        reportProblem: "একটি সমস্যা রিপোর্ট করুন",
+        phone: "ফোন",
+        phonePlaceholder: "যেমন, 9999999999",
+        otp: "ওটিপি",
+        otpPlaceholder: "6-সংখ্যার ওটিপি",
+        getOtp: "ওটিপি পান",
+        verifyLogin: "যাচাই করুন এবং লগইন করুন",
+        authInstructions: "ফোন লিখুন → ওটিপি পান → কোড লিখুন → যাচাই করুন এবং লগইন করুন",
+        category: "বিভাগ",
+        water: "জল",
+        road: "রাস্তা",
+        health: "স্বাস্থ্য",
+        electricity: "বিদ্যুৎ",
+        description: "বিবরণ",
+        descPlaceholder: "সমস্যাটি বর্ণনা করুন",
+        photo: "ফটো (ঐচ্ছিক)",
+        submitIssue: "সমস্যা জমা দিন",
+        adminHeader: "অ্যাডমিন ড্যাশবোর্ড – সমস্যা পরিচালনা করুন",
+        adminPhone: "অ্যাডমিন ফোন (অ্যাডমিন ভূমিকার জন্য 8888888888 ব্যবহার করুন)",
+        loginToLoad: "সমস্যা লোড করতে লগইন করুন",
+        all: "সব",
+        search: "অনুসন্ধান",
+        searchPlaceholder: "বিভাগ/বিবরণে পাঠ্য",
+        from: "থেকে",
+        to: "পর্যন্ত",
+        status: "স্থিতি",
+        created: "তৈরি",
+        assigned: "নির্ধারিত",
+        inProgress: "অগ্রগতিতে",
+        resolved: "সমাধান করা হয়েছে",
+        applyFilters: "ফিল্টার প্রয়োগ করুন",
+        clear: "পরিষ্কার",
+        refresh: "রিফ্রেশ",
+        id: "আইডি",
+        lat: "অক্ষাংশ",
+        lng: "দ্রাঘিমাংশ",
+        photos: "ফটো",
+        actions: "পদক্ষেপ",
+        assign: "নির্ধারণ",
+        progress: "অগ্রগতিতে",
+        resolve: "সমাধান",
+        showing: "দেখানো হচ্ছে",
+        issues: "সমস্যা",
+        loaded: "লোড করা হয়েছে"
+      },
+      te: {
+        selectLanguage: "భాష",
+        appName: "గ్రామసేతు",
+        tagline: "సాంకేతికత ద్వారా గ్రామీణ సమాజాలకు సాధికారత",
+        description: "పారదర్శక మరియు సమర్థవంతమైన సమస్య పరిష్కారం కోసం పౌరులను స్థానీయ పాలనతో కలుపుతున్న సమగ్ర వేదిక.",
+        citizenPortal: "పౌరుల పోర్టల్",
+        citizenDesc: "ఫోటోలు మరియు స్థానంతో మీ సమాజంలోని సమస్యలను నివేదించండి. మీ ఫిర్యాదుల స్థితిని ట్రాక్ చేయండి మరియు పరిష్కారాలపై నిజ-సమయ నవీకరణలను పొందండి.",
+        enterCitizen: "పౌరుల పోర్టల్‌లోకి ప్రవేశించండి →",
+        adminDashboard: "అడ్మిన్ డాష్‌బోర్డ్",
+        adminDesc: "సమాజ సమస్యలను సమర్థవంతంగా నిర్వహించండి మరియు పరిష్కరించండి. ఇంటరాక్టివ్ మ్యాప్‌లో అన్ని నివేదికలను వీక్షించండి, వర్గం ద్వారా ఫిల్టర్ చేయండి మరియు నిజ-సమయంలో స్థితిని నవీకరించండి.",
+        enterAdmin: "అడ్మిన్ పోర్టల్‌లోకి ప్రవేశించండి →",
+        blockchain: "బ్లాక్‌చెయిన్ సురక్షితం",
+        blockchainDesc: "పూర్తి పారదర్శకత కోసం ప్రతి లావాదేవీ బ్లాక్‌చెయిన్‌లో రికార్డ్ చేయబడుతుంది",
+        gps: "GPS స్థానం",
+        gpsDesc: "వేగవంతమైన ప్రతిస్పందన కోసం సమస్యల యొక్క ఖచ్చితమైన స్థాన ట్రాకింగ్",
+        tracking: "నిజ-సమయ ట్రాకింగ్",
+        trackingDesc: "సృష్టి నుండి పరిష్కారం వరకు సమస్య స్థితిని పర్యవేక్షించండి",
+        backHome: "← హోమ్‌కు తిరిగి వెళ్ళండి",
+        citizenHeader: "పౌరుల పోర్టల్ – సమస్యలను నివేదించండి",
+        reportProblem: "సమస్యను నివేదించండి",
+        phone: "ఫోన్",
+        phonePlaceholder: "ఉదా., 9999999999",
+        otp: "OTP",
+        otpPlaceholder: "6-అంకెల OTP",
+        getOtp: "OTP పొందండి",
+        verifyLogin: "ధృవీకరించండి & లాగిన్ అవ్వండి",
+        authInstructions: "ఫోన్ నమోదు చేయండి → OTP పొందండి → కోడ్ నమోదు చేయండి → ధృవీకరించండి & లాగిన్ అవ్వండి",
+        category: "వర్గం",
+        water: "నీరు",
+        road: "రోడ్డు",
+        health: "ఆరోగ్యం",
+        electricity: "విద్యుత్",
+        description: "వివరణ",
+        descPlaceholder: "సమస్యను వివరించండి",
+        photo: "ఫోటో (ఐచ్ఛికం)",
+        submitIssue: "సమస్యను సమర్పించండి",
+        adminHeader: "అడ్మిన్ డాష్‌బోర్డ్ – సమస్యలను నిర్వహించండి",
+        adminPhone: "అడ్మిన్ ఫోన్ (అడ్మిన్ పాత్ర కోసం 8888888888 ఉపయోగించండి)",
+        loginToLoad: "సమస్యలను లోడ్ చేయడానికి లాగిన్ అవ్వండి",
+        all: "అన్నీ",
+        search: "శోధన",
+        searchPlaceholder: "వర్గం/వివరణలో వచనం",
+        from: "నుండి",
+        to: "వరకు",
+        status: "స్థితి",
+        created: "సృష్టించబడింది",
+        assigned: "కేటాయించబడింది",
+        inProgress: "పురోగతిలో",
+        resolved: "పరిష్కరించబడింది",
+        applyFilters: "ఫిల్టర్‌లను వర్తింపజేయండి",
+        clear: "క్లియర్",
+        refresh: "రిఫ్రెష్",
+        id: "ID",
+        lat: "అక్షాంశం",
+        lng: "రేఖాంశం",
+        photos: "ఫోటోలు",
+        actions: "చర్యలు",
+        assign: "కేటాయించండి",
+        progress: "పురోగతిలో",
+        resolve: "పరిష్కరించండి",
+        showing: "చూపిస్తోంది",
+        issues: "సమస్యలు",
+        loaded: "లోడ్ చేయబడింది"
+      },
+      mr: {
+        selectLanguage: "भाषा",
+        appName: "ग्रामसेतू",
+        tagline: "तंत्रज्ञानाद्वारे ग्रामीण समुदायांना सक्षम बनवणे",
+        description: "पारदर्शक आणि कार्यक्षम समस्या निराकरणासाठी नागरिकांना स्थानिक शासनाशी जोडणारे सर्वसमावेशक व्यासपीठ.",
+        citizenPortal: "नागरिक पोर्टल",
+        citizenDesc: "फोटो आणि स्थानासह आपल्या समुदायातील समस्यांचा अहवाल द्या. आपल्या तक्रारींच्या स्थितीचा मागोवा घ्या आणि निराकरणावर रिअल-टाइम अपडेट मिळवा.",
+        enterCitizen: "नागरिक पोर्टलमध्ये प्रवेश करा →",
+        adminDashboard: "प्रशासक डॅशबोर्ड",
+        adminDesc: "सामुदायिक समस्यांचे कार्यक्षमतेने व्यवस्थापन आणि निराकरण करा. परस्परसंवादी नकाशावर सर्व अहवाल पहा, श्रेणीनुसार फिल्टर करा आणि रिअल-टाइममध्ये स्थिती अपडेट करा.",
+        enterAdmin: "प्रशासक पोर्टलमध्ये प्रवेश करा →",
+        blockchain: "ब्लॉकचेन सुरक्षित",
+        blockchainDesc: "संपूर्ण पारदर्शकतेसाठी प्रत्येक व्यवहार ब्लॉकचेनवर रेकॉर्ड केला जातो",
+        gps: "GPS स्थान",
+        gpsDesc: "जलद प्रतिसादासाठी समस्यांचे अचूक स्थान ट्रॅकिंग",
+        tracking: "रिअल-टाइम ट्रॅकिंग",
+        trackingDesc: "निर्मितीपासून निराकरणापर्यंत समस्येच्या स्थितीचे निरीक्षण करा",
+        backHome: "← होमवर परत या",
+        citizenHeader: "नागरिक पोर्टल – समस्यांचा अहवाल द्या",
+        reportProblem: "समस्येचा अहवाल द्या",
+        phone: "फोन",
+        phonePlaceholder: "उदा., 9999999999",
+        otp: "OTP",
+        otpPlaceholder: "6-अंकी OTP",
+        getOtp: "OTP मिळवा",
+        verifyLogin: "सत्यापित करा आणि लॉगिन करा",
+        authInstructions: "फोन प्रविष्ट करा → OTP मिळवा → कोड प्रविष्ट करा → सत्यापित करा आणि लॉगिन करा",
+        category: "श्रेणी",
+        water: "पाणी",
+        road: "रस्ता",
+        health: "आरोग्य",
+        electricity: "वीज",
+        description: "वर्णन",
+        descPlaceholder: "समस्येचे वर्णन करा",
+        photo: "फोटो (पर्यायी)",
+        submitIssue: "समस्या सबमिट करा",
+        adminHeader: "प्रशासक डॅशबोर्ड – समस्यांचे व्यवस्थापन करा",
+        adminPhone: "प्रशासक फोन (प्रशासक भूमिकेसाठी 8888888888 वापरा)",
+        loginToLoad: "समस्या लोड करण्यासाठी लॉगिन करा",
+        all: "सर्व",
+        search: "शोध",
+        searchPlaceholder: "श्रेणी/वर्णनात मजकूर",
+        from: "पासून",
+        to: "पर्यंत",
+        status: "स्थिती",
+        created: "तयार केले",
+        assigned: "नियुक्त केले",
+        inProgress: "प्रगतीत",
+        resolved: "निराकरण केले",
+        applyFilters: "फिल्टर लागू करा",
+        clear: "साफ करा",
+        refresh: "रिफ्रेश करा",
+        id: "ID",
+        lat: "अक्षांश",
+        lng: "रेखांश",
+        photos: "फोटो",
+        actions: "कृती",
+        assign: "नियुक्त करा",
+        progress: "प्रगतीत",
+        resolve: "निराकरण करा",
+        showing: "दर्शवित आहे",
+        issues: "समस्या",
+        loaded: "लोड केले"
+      },
+      ta: {
+        selectLanguage: "மொழி",
+        appName: "கிராமசேது",
+        tagline: "தொழில்நுட்பம் மூலம் கிராமப்புற சமூகங்களை மேம்படுத்துதல்",
+        description: "வெளிப்படையான மற்றும் திறமையான பிரச்சனை தீர்வுக்காக குடிமக்களை உள்ளூர் நிர்வாகத்துடன் இணைக்கும் விரிவான தளம்.",
+        citizenPortal: "குடிமக்கள் போர்ட்டல்",
+        citizenDesc: "புகைப்படங்கள் மற்றும் இருப்பிடத்துடன் உங்கள் சமூகத்தில் உள்ள பிரச்சனைகளைப் புகாரளிக்கவும். உங்கள் புகார்களின் நிலையைக் கண்காணிக்கவும் மற்றும் தீர்வுகளில் நிகழ்நேர புதுப்பிப்புகளைப் பெறவும்.",
+        enterCitizen: "குடிமக்கள் போர்ட்டலுக்குள் நுழையவும் →",
+        adminDashboard: "நிர்வாக டாஷ்போர்டு",
+        adminDesc: "சமூக பிரச்சனைகளை திறம்பட நிர்வகித்து தீர்க்கவும். ஊடாடும் வரைபடத்தில் அனைத்து அறிக்கைகளையும் காண்க, வகையின்படி வடிகட்டவும் மற்றும் நிகழ்நேரத்தில் நிலையை புதுப்பிக்கவும்.",
+        enterAdmin: "நிர்வாக போர்ட்டலுக்குள் நுழையவும் →",
+        blockchain: "பிளாக்செயின் பாதுகாப்பு",
+        blockchainDesc: "முழு வெளிப்படைத்தன்மைக்காக ஒவ்வொரு பரிவர்த்தனையும் பிளாக்செயினில் பதிவு செய்யப்படுகிறது",
+        gps: "GPS இருப்பிடம்",
+        gpsDesc: "விரைவான பதிலளிப்புக்காக பிரச்சனைகளின் துல்லியமான இருப்பிட கண்காணிப்பு",
+        tracking: "நிகழ்நேர கண்காணிப்பு",
+        trackingDesc: "உருவாக்கம் முதல் தீர்வு வரை பிரச்சனை நிலையை கண்காணிக்கவும்",
+        backHome: "← முகப்புக்குத் திரும்பு",
+        citizenHeader: "குடிமக்கள் போர்ட்டல் – பிரச்சனைகளைப் புகாரளிக்கவும்",
+        reportProblem: "ஒரு பிரச்சனையைப் புகாரளிக்கவும்",
+        phone: "தொலைபேசி",
+        phonePlaceholder: "எ.கா., 9999999999",
+        otp: "OTP",
+        otpPlaceholder: "6-இலக்க OTP",
+        getOtp: "OTP பெறுக",
+        verifyLogin: "சரிபார்த்து உள்நுழையவும்",
+        authInstructions: "தொலைபேசி உள்ளிடவும் → OTP பெறுக → குறியீட்டை உள்ளிடவும் → சரிபார்த்து உள்நுழையவும்",
+        category: "வகை",
+        water: "தண்ணீர்",
+        road: "சாலை",
+        health: "சுகாதாரம்",
+        electricity: "மின்சாரம்",
+        description: "விளக்கம்",
+        descPlaceholder: "பிரச்சனையை விவரிக்கவும்",
+        photo: "புகைப்படம் (விருப்பமானது)",
+        submitIssue: "பிரச்சனையை சமர்ப்பிக்கவும்",
+        adminHeader: "நிர்வாக டாஷ்போர்டு – பிரச்சனைகளை நிர்வகிக்கவும்",
+        adminPhone: "நிர்வாக தொலைபேசி (நிர்வாக பங்குக்கு 8888888888 பயன்படுத்தவும்)",
+        loginToLoad: "பிரச்சனைகளை ஏற்ற உள்நுழையவும்",
+        all: "அனைத்தும்",
+        search: "தேடல்",
+        searchPlaceholder: "வகை/விளக்கத்தில் உரை",
+        from: "இருந்து",
+        to: "வரை",
+        status: "நிலை",
+        created: "உருவாக்கப்பட்டது",
+        assigned: "ஒதுக்கப்பட்டது",
+        inProgress: "முன்னேற்றத்தில்",
+        resolved: "தீர்க்கப்பட்டது",
+        applyFilters: "வடிப்பான்களைப் பயன்படுத்து",
+        clear: "அழி",
+        refresh: "புதுப்பி",
+        id: "ID",
+        lat: "அட்சரேகை",
+        lng: "தீர்க்கரேகை",
+        photos: "புகைப்படங்கள்",
+        actions: "செயல்கள்",
+        assign: "ஒதுக்கு",
+        progress: "முன்னேற்றத்தில்",
+        resolve: "தீர்",
+        showing: "காட்டுகிறது",
+        issues: "பிரச்சனைகள்",
+        loaded: "ஏற்றப்பட்டது"
+      }
+    };
+
+    let currentLang = localStorage.getItem('language') || 'en';
+
+    function switchLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('language', lang);
+      
+      // Update all elements with data-translate attribute
+      document.querySelectorAll('[data-translate]').forEach(element => {
+        const key = element.getAttribute('data-translate');
+        if (translations[lang][key]) {
+          element.textContent = translations[lang][key];
+        }
+      });
+
+      // Update placeholders
+      document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+        const key = element.getAttribute('data-translate-placeholder');
+        if (translations[lang][key]) {
+          element.placeholder = translations[lang][key];
+        }
+      });
+
+      // Update select options
+      document.querySelectorAll('select option[data-translate]').forEach(option => {
+        const key = option.getAttribute('data-translate');
+        if (translations[lang][key]) {
+          option.textContent = translations[lang][key];
+        }
+      });
+
+      // Update legend
+      updateMapLegend();
+    }
+
+    function updateMapLegend() {
+      const legendDiv = document.querySelector('.legend');
+      if (legendDiv) {
+        legendDiv.innerHTML = `
+          <div><span class="dot" style="background:#1e90ff"></span>${translations[currentLang].created}</div>
+          <div><span class="dot" style="background:#f5b44e"></span>${translations[currentLang].assigned}</div>
+          <div><span class="dot" style="background:#f08b3e"></span>${translations[currentLang].inProgress}</div>
+          <div><span class="dot" style="background:#2eaf6e"></span>${translations[currentLang].resolved}</div>
+        `;
+      }
+    }
+
+    // Language selector event listener
+    document.getElementById('languageSelect').addEventListener('change', function() {
+      switchLanguage(this.value);
+    });
+
+    // Initialize language on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('languageSelect').value = currentLang;
+      switchLanguage(currentLang);
+    });
+
+    // ----- Panel Navigation -----
+    function showPanel(panelName) {
+      const panels = document.querySelectorAll(".panel");
+      panels.forEach(p => p.classList.remove("active"));
+      document.getElementById(panelName).classList.add("active");
+      
+      if (panelName === "admin") {
+        setTimeout(() => map && map.invalidateSize(), 60);
+      }
+    }
+
+    // ----- helpers -----
+    const $ = (id)=>document.getElementById(id);
+    const API = ""; // same-origin
+    const set = (id,t,cls)=>{ const e=$(id); e.textContent=t; e.className=cls||"muted"; };
+    const fmtDate = (d)=> new Date(d).toLocaleString();
+
+    // =========================
+    // CITIZEN
+    // =========================
+    let c_token = null;
+    let c_uploads = []; // {filename,mime,size,url}
+
+    $("c_getOtp").onclick = async () => {
+      try {
+        const phone = $("c_phone").value.trim();
+        if (!phone) return set("c_authMsg","Enter phone first","err");
+        const r = await fetch(API + "/auth/otp/start", {
+          method:"POST", headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ phone })
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || "Failed to send OTP");
+        if (data.devCode) set("c_authMsg", `DEV OTP: ${data.devCode}`, "ok");
+        else set("c_authMsg","OTP sent. Check your SMS.","ok");
+      } catch (e) { set("c_authMsg","OTP error: " + e.message,"err"); }
+    };
+
+    $("c_login").onclick = async () => {
+      try {
+        const phone = $("c_phone").value.trim();
+        const code  = $("c_otp").value.trim();
+        if (!phone || !code) return set("c_authMsg","Enter phone and OTP","err");
+        const r = await fetch(API + "/auth/otp/verify", {
+          method:"POST", headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ phone, code })
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || "Login failed");
+        c_token = data.token;
+        set("c_authMsg",`Logged in as ${data.role}`,"ok");
+      } catch (e) { set("c_authMsg","Login error: " + e.message,"err"); }
+    };
+
+    // Upload on file select
+    $("c_photo").addEventListener("change", async (ev) => {
+      const f = ev.target.files?.[0];
+      if (!f) return;
+      if (!c_token) { set("c_msg","Login first to upload.","err"); ev.target.value=""; return; }
+
+      const fd = new FormData();
+      fd.append("photo", f);
+      set("c_msg","Uploading photo…");
+
+      try {
+        const r = await fetch(API + "/upload", {
+          method: "POST",
+          headers: { "Authorization": "Bearer " + c_token },
+          body: fd
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || "Upload failed");
+        c_uploads.push({ filename: data.filename, mime: data.mime, size: data.size, url: data.url });
+        set("c_msg","Photo uploaded.","ok");
+        renderCitizenThumbs();
+      } catch (e) {
+        set("c_msg","Upload error: " + e.message, "err");
+        ev.target.value = "";
+      }
+    });
+
+    function renderCitizenThumbs() {
+      const wrap = $("c_previewWrap");
+      wrap.innerHTML = "";
+      c_uploads.forEach(a => {
+        const img = document.createElement("img");
+        img.className = "thumb";
+        img.src = a.url;
+        img.alt = "photo";
+        img.title = a.filename;
+        wrap.appendChild(img);
+      });
+    }
+
+    $("c_submit").onclick = async () => {
+      set("c_msg","Submitting…");
+      if (!c_token) return set("c_msg","Please login first.","err");
+      if (!navigator.geolocation) return set("c_msg","Enable location.","err");
+
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+          const payload = {
+            category: $("c_category").value,
+            description: $("c_desc").value || "",
+            coords: { lat: pos.coords.latitude, lng: pos.coords.longitude },
+            attachments: c_uploads.map(a => ({ filename: a.filename, mime: a.mime, size: a.size }))
+          };
+          const r = await fetch(API + "/issues", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + c_token },
+            body: JSON.stringify(payload)
+          });
+          const data = await r.json();
+          if (!r.ok) throw new Error(data.error || "Submit failed");
+          set("c_msg", "Submitted! Tx: " + (data.onchainTx || "none"), "ok");
+          c_uploads = [];
+          renderCitizenThumbs();
+          $("c_desc").value = "";
+          $("c_photo").value = "";
+        } catch (e) { set("c_msg", "Submit error: " + e.message, "err"); }
+      }, () => set("c_msg","Location blocked. Allow it then refresh.","err"),
+      { enableHighAccuracy: true, timeout: 10000 });
+    };
+
+    // =========================
+    // ADMIN
+    // =========================
+    let a_token = null;
+
+    $("a_getOtp").onclick = async () => {
+      try {
+        const phone = $("a_phone").value.trim();
+        if (!phone) return set("a_msg","Enter admin phone first","err");
+        const r = await fetch(API + "/auth/otp/start", {
+          method:"POST", headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ phone })
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || "Failed to send OTP");
+        if (data.devCode) set("a_msg", `DEV OTP: ${data.devCode}`, "ok");
+        else set("a_msg","OTP sent. Check your SMS.","ok");
+      } catch (e) { set("a_msg","OTP error: " + e.message,"err"); }
+    };
+
+    $("a_login").onclick = async ()=>{
+      try {
+        const phone = $("a_phone").value.trim();
+        const code  = $("a_otp").value.trim();
+        if (!phone || !code) return set("a_msg","Enter phone and OTP","err");
+        const r = await fetch(API + "/auth/otp/verify", {
+          method:"POST", headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ phone, code })
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || "Login failed");
+        a_token = data.token;
+        set("a_msg","Logged in as admin","ok");
+        await loadAdmin();
+      } catch (e) { set("a_msg","Login error: " + e.message,"err"); }
+    };
+
+    // Map init
+    const defaultCenter = [24.7000, 83.0000];
+    const map = L.map('map', { zoomControl: true }).setView(defaultCenter, 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    const legend = L.control({ position: 'topright' });
+    legend.onAdd = function () {
+      const div = L.DomUtil.create('div', 'legend');
+      div.innerHTML = `
+        <div><span class="dot" style="background:#1e90ff"></span>${translations[currentLang].created}</div>
+        <div><span class="dot" style="background:#f5b44e"></span>${translations[currentLang].assigned}</div>
+        <div><span class="dot" style="background:#f08b3e"></span>${translations[currentLang].inProgress}</div>
+        <div><span class="dot" style="background:#2eaf6e"></span>${translations[currentLang].resolved}</div>
+      `;
+      return div;
+    };
+    legend.addTo(map);
+    const markerLayer = L.layerGroup().addTo(map);
+
+    function statusColor(s) {
+      switch (s) {
+        case "Created": return "#1e90ff";
+        case "Assigned": return "#f5b44e";
+        case "InProgress": return "#f08b3e";
+        case "Resolved": return "#2eaf6e";
+        default: return "#555";
+      }
+    }
+
+    function popupGallery(att) {
+      if (!att || !att.length) return "";
+      const imgs = att.slice(0, 3).map(a => `<a href="${a.url}" target="_blank"><img src="${a.url}" class="thumb" style="width:56px;height:56px"/></a>`).join("");
+      return `<div style="margin-top:6px" class="thumbs">${imgs}</div>`;
+    }
+
+    function renderMarkers(items) {
+      markerLayer.clearLayers();
+      const bounds = [];
+      items.forEach(i => {
+        if (!i.coords || typeof i.coords.lat !== "number" || typeof i.coords.lng !== "number") return;
+        const latlng = [i.coords.lat, i.coords.lng];
+        const m = L.circleMarker(latlng, {
+          radius: 7, color: statusColor(i.status), fillColor: statusColor(i.status),
+          fillOpacity: 0.9, weight: 1
+        }).addTo(markerLayer);
+        m.bindPopup(`
+          <b>#${i.id}</b> – ${i.category}<br/>
+          <b>${translations[currentLang].status}:</b> ${i.status}<br/>
+          <b>${translations[currentLang].created}:</b> ${fmtDate(i.createdAt)}<br/>
+          <b>${translations[currentLang].lat}/${translations[currentLang].lng}:</b> ${i.coords.lat.toFixed(5)}, ${i.coords.lng.toFixed(5)}
+          ${popupGallery(i.attachments)}
+          <div style="margin-top:6px">
+            <button id="pp-assign-${i.id}">${translations[currentLang].assign}</button>
+            <button id="pp-prog-${i.id}">${translations[currentLang].progress}</button>
+            <button id="pp-res-${i.id}">${translations[currentLang].resolve}</button>
+          </div>
+        `);
+        m.on('popupopen', () => {
+          const setStatus = async (s) => { await updateStatus(i.id, s); loadAdmin(); };
+          const a = document.getElementById(`pp-assign-${i.id}`); if (a) a.onclick = ()=>setStatus("Assigned");
+          const p = document.getElementById(`pp-prog-${i.id}`);   if (p) p.onclick = ()=>setStatus("InProgress");
+          const r = document.getElementById(`pp-res-${i.id}`);    if (r) r.onclick = ()=>setStatus("Resolved");
+        });
+        bounds.push(latlng);
+      });
+      if (bounds.length) map.fitBounds(bounds, { padding: [30,30] });
+      setTimeout(()=> map.invalidateSize(), 50);
+    }
+
+    // ---------- Filters ----------
+    function getFilters() {
+      const cat = $("f_category").value;
+      const q   = $("f_q").value.trim();
+      const from = $("f_from").value;
+      const to   = $("f_to").value;
+      const st = Array.from(document.querySelectorAll(".f_status:checked")).map(x=>x.value);
+      return { category: cat, q, from, to, status: st };
+    }
+
+    function buildQuery(params) {
+      const qs = new URLSearchParams();
+      const allWords = [
+        translations.en.all,
+        translations.hi.all,
+        translations.bn.all,
+        translations.te.all,
+        translations.mr.all,
+        translations.ta.all
+      ];
+      if (params.category && !allWords.includes(params.category)) {
+        qs.set("category", params.category);
+      }
+      if (params.q) qs.set("q", params.q);
+      if (params.from) qs.set("from", params.from);
+      if (params.to) qs.set("to", params.to);
+      if (params.status && params.status.length) qs.set("status", params.status.join(","));
+      return qs.toString() ? ("?" + qs.toString()) : "";
+    }
+
+    $("f_apply").onclick = ()=> loadAdmin();
+    $("f_clear").onclick = ()=>{
+      $("f_category").value = translations[currentLang].all;
+      $("f_q").value = "";
+      $("f_from").value = "";
+      $("f_to").value = "";
+      document.querySelectorAll(".f_status").forEach(cb=> cb.checked = true);
+      loadAdmin();
+    };
+    $("a_refresh").onclick = ()=> loadAdmin();
+
+    async function loadAdmin(){
+      if(!a_token){ set("a_msg","Login first."); return; }
+      try {
+        const qs = buildQuery(getFilters());
+        const r = await fetch(API + "/issues" + qs, { headers:{ Authorization:"Bearer "+a_token }});
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || r.statusText);
+        const items = data.items || [];
+        $("a_count").textContent = `${translations[currentLang].showing} ${items.length} ${translations[currentLang].issues}`;
+        set("a_msg", `${translations[currentLang].loaded} ${items.length} ${translations[currentLang].issues}`, "ok");
+
+        // table
+        const tb = $("a_tbody"); tb.innerHTML = "";
+        items.forEach(i=>{
+          const tr = document.createElement("tr");
+          const photos = (i.attachments || []).slice(0,3).map(a=>`<a href="${a.url}" target="_blank"><img src="${a.url}" class="thumb"/></a>`).join("");
+          tr.innerHTML = `
+            <td>${i.id}</td>
+            <td>${i.category}</td>
+            <td>${i.status}</td>
+            <td>${fmtDate(i.createdAt)}</td>
+            <td>${i.coords?.lat?.toFixed ? i.coords.lat.toFixed(5) : "-"}</td>
+            <td>${i.coords?.lng?.toFixed ? i.coords.lng.toFixed(5) : "-"}</td>
+            <td class="thumbs">${photos || "-"}</td>
+            <td>
+              <button data-id="${i.id}" data-s="Assigned">${translations[currentLang].assign}</button>
+              <button data-id="${i.id}" data-s="InProgress">${translations[currentLang].progress}</button>
+              <button data-id="${i.id}" data-s="Resolved">${translations[currentLang].resolve}</button>
+            </td>`;
+          tb.appendChild(tr);
+        });
+
+        tb.querySelectorAll("button").forEach(btn=>{
+          btn.onclick = async ()=>{
+            const id = btn.getAttribute("data-id");
+            const s  = btn.getAttribute("data-s");
+            await updateStatus(id, s);
+            await loadAdmin();
+          };
+        });
+
+        // map
+        renderMarkers(items);
+      } catch (e) {
+        set("a_msg","Load error: " + e.message,"err");
+        console.error(e);
+      }
+    }
+
+    async function updateStatus(id, s){
+      const r2 = await fetch(API + "/issues/"+id+"/status", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json", Authorization:"Bearer "+a_token },
+        body: JSON.stringify({ status: s })
+      });
+      const resp = await r2.json();
+      set("a_msg","Status -> " + resp.status, "ok");
+    }
+  </script>
+</body>
+</html>
