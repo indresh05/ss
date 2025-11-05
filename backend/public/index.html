@@ -117,6 +117,274 @@
       box-shadow: 0 2px 6px rgba(103,198,125,.3);
     }
 
+    /* ============================================ */
+    /* AUDIO GUIDE STYLES - CITIZEN PORTAL ONLY */
+    /* ============================================ */
+    .audio-guide {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px) saturate(120%);
+      -webkit-backdrop-filter: blur(12px) saturate(120%);
+      min-width: 200px;
+      transition: all 0.3s ease;
+      display: none; /* Hidden by default */
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    .audio-guide.visible {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .audio-guide.minimized {
+      min-width: auto;
+      padding: 12px;
+    }
+
+    .audio-guide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .audio-guide.minimized .audio-guide-header {
+      margin-bottom: 0;
+    }
+
+    .audio-guide-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .audio-guide.minimized .audio-guide-title span {
+      display: none;
+    }
+
+    .audio-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .audio-icon svg {
+      width: 20px;
+      height: 20px;
+      filter: drop-shadow(0 2px 4px rgba(103,198,125,.3));
+    }
+
+    .minimize-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--muted);
+      transition: color 0.2s;
+      width: auto;
+      min-width: auto;
+    }
+
+    .minimize-btn:hover {
+      color: var(--primary);
+      transform: none;
+      box-shadow: none;
+      filter: none;
+    }
+
+    .audio-controls {
+      display: flex;
+      gap: 8px;
+      flex-direction: column;
+    }
+
+    .audio-guide.minimized .audio-controls {
+      display: none;
+    }
+
+    .audio-btn {
+      width: 100%;
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: linear-gradient(180deg, #6dcc83 0%, #59b96e 100%);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(103,198,125,.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .audio-btn:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(103,198,125,.35);
+    }
+
+    .audio-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .audio-btn.stop-btn {
+      background: linear-gradient(180deg, #f08b3e 0%, #e07a2e 100%);
+      box-shadow: 0 4px 12px rgba(240,139,62,.25);
+    }
+
+    .audio-btn.stop-btn:hover {
+      box-shadow: 0 6px 16px rgba(240,139,62,.35);
+    }
+
+    .audio-status {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      padding: 6px 0;
+      font-style: italic;
+    }
+
+    .audio-guide.minimized .audio-status {
+      display: none;
+    }
+
+    .pulse {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* ============================================ */
+    /* END AUDIO GUIDE STYLES */
+    /* ============================================ */
+
+    /* ============================================ */
+/* VIDEO TUTORIAL STYLES - CITIZEN PORTAL */
+/* ============================================ */
+.video-tutorial {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+}
+
+.video-tutorial-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 8px 0;
+}
+
+.video-tutorial-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.video-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #67C67D 0%, #4FB367 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(103,198,125,.3);
+}
+
+.video-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: white;
+}
+
+.toggle-icon {
+  font-size: 20px;
+  color: var(--muted);
+  transition: transform 0.3s ease;
+}
+
+.video-tutorial.expanded .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.video-container {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.video-tutorial.expanded .video-container {
+  max-height: 500px;
+  margin-top: 16px;
+}
+
+.video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(16,39,60,.12);
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 12px;
+}
+
+.video-description {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(103,198,125,.08);
+  border-radius: 10px;
+  border-left: 3px solid var(--primary);
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* ============================================ */
+/* END VIDEO TUTORIAL STYLES */
+/* ============================================ */
+
     /* Header with a mint droplet/leaf */
     .brand {
       display: flex; align-items: center; gap: 10px;
@@ -438,6 +706,12 @@
         padding: 8px 10px;
         min-width: 140px;
       }
+      .audio-guide {
+        top: 10px;
+        right: 10px;
+        padding: 8px 10px;
+        min-width: 180px;
+      }
     }
   </style>
 </head>
@@ -458,6 +732,42 @@
       <option value="ta">தமிழ் (Tamil)</option>
     </select>
   </div>
+
+  <!-- ============================================ -->
+  <!-- AUDIO GUIDE - CITIZEN PORTAL ONLY -->
+  <!-- ============================================ -->
+  <div class="audio-guide" id="audioGuide">
+    <div class="audio-guide-header">
+      <div class="audio-guide-title">
+        <div class="audio-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#67C67D" stroke-width="2">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </div>
+        <span>हिन्दी गाइड</span>
+      </div>
+      <button class="minimize-btn" id="minimizeBtn" title="Minimize">
+        <span id="minimizeIcon">−</span>
+      </button>
+    </div>
+    <div class="audio-controls">
+      <button class="audio-btn" id="playGuideBtn">
+        <span>▶</span>
+        <span>ऑडियो गाइड सुनें</span>
+      </button>
+      <button class="audio-btn stop-btn" id="stopGuideBtn" style="display: none;">
+        <span>⏹</span>
+        <span>बंद करें</span>
+      </button>
+      <div class="audio-status" id="audioStatus">तैयार है</div>
+    </div>
+  </div>
+  <!-- ============================================ -->
+  <!-- END AUDIO GUIDE -->
+  <!-- ============================================ -->
 
   <!-- Landing Page -->
   <div id="landing" class="panel active">
@@ -546,6 +856,39 @@
       <h2 data-translate="citizenHeader">Citizen Portal – Report Issues</h2>
     </div>
 
+    <!-- YouTube Video Tutorial -->
+<div class="video-tutorial" id="videoTutorial">
+  <div class="video-tutorial-header" onclick="toggleVideo()">
+    <div class="video-tutorial-title">
+      <div class="video-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+        </svg>
+      </div>
+      <span data-translate="videoGuideTitle">📹 How to Use - Video Tutorial</span>
+    </div>
+    <span class="toggle-icon">▼</span>
+  </div>
+  
+  <div class="video-container">
+    <div class="video-wrapper">
+      <iframe 
+        src="https://www.youtube.com/embed/VhGx-F6vDd4" 
+        title="GramSetu User Manual"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+      </iframe>
+    </div>
+    <div class="video-description">
+      <strong data-translate="videoGuideDesc">📖 Watch this video to learn:</strong>
+      <ul style="margin: 8px 0 0 20px; padding: 0;">
+        <li data-translate="videoPoint1">How to login with OTP</li>
+        <li data-translate="videoPoint2">How to report an issue with photos and location</li>
+        <li data-translate="videoPoint3">How to track your complaint status</li>
+      </ul>
+    </div>
+  </div>
+</div>
     <h3 data-translate="reportProblem">Report a Problem</h3>
     <div class="row">
       <div>
@@ -687,6 +1030,170 @@
   ></script>
 
   <script>
+    // ============================================
+    // AUDIO GUIDE FUNCTIONALITY - CITIZEN PORTAL ONLY
+    // ============================================
+    
+    // Hindi audio guide script with detailed application information for citizens
+    const hindiGuideScript = `
+      नमस्कार! ग्रामसेतु नागरिक पोर्टल में आपका स्वागत है। 
+      
+      यह पोर्टल आपको अपने क्षेत्र की समस्याओं को आसानी से रिपोर्ट करने की सुविधा देता है।
+      
+      सबसे पहले, आपको अपना मोबाइल नंबर दर्ज करना होगा।
+      फिर, गेट ओ टी पी बटन पर क्लिक करें।
+      आपको एक 6 अंकों का कोड मिलेगा, उसे दर्ज करें।
+      और वेरिफाई एंड लॉगिन बटन दबाएं।
+      
+      लॉगिन करने के बाद:
+      समस्या की श्रेणी चुनें - जैसे पानी, सड़क, स्वास्थ्य, या बिजली।
+      फिर समस्या का विवरण लिखें।
+      अगर चाहें तो फोटो भी अपलोड कर सकते हैं।
+      
+      आपका स्थान अपने आप जी पी एस से लिया जाएगा।
+      
+      अंत में, सबमिट इश्यू बटन दबाएं।
+      
+      आपकी शिकायत तुरंत प्रशासन तक पहुंच जाएगी और ब्लॉकचेन पर सुरक्षित रूप से दर्ज हो जाएगी।
+      
+      आप अपनी शिकायत की स्थिति को रियल टाइम में ट्रैक कर सकते हैं।
+      
+      यह पोर्टल छह भारतीय भाषाओं में उपलब्ध है।
+      
+      ग्रामसेतु के साथ अपने गांव को बेहतर बनाएं।
+      
+      धन्यवाद!
+    `;
+
+    let speechSynthesis = window.speechSynthesis;
+    let currentUtterance = null;
+    let isPlaying = false;
+
+    // Initialize audio guide
+    function initAudioGuide() {
+      const playBtn = document.getElementById('playGuideBtn');
+      const stopBtn = document.getElementById('stopGuideBtn');
+      const statusDiv = document.getElementById('audioStatus');
+      const minimizeBtn = document.getElementById('minimizeBtn');
+      const audioGuide = document.getElementById('audioGuide');
+      const minimizeIcon = document.getElementById('minimizeIcon');
+
+      // Play audio guide
+      playBtn.addEventListener('click', function() {
+        if (!isPlaying) {
+          playHindiGuide();
+        }
+      });
+
+      // Stop audio guide
+      stopBtn.addEventListener('click', function() {
+        stopHindiGuide();
+      });
+
+      // Minimize/Maximize audio guide
+      minimizeBtn.addEventListener('click', function() {
+        audioGuide.classList.toggle('minimized');
+        minimizeIcon.textContent = audioGuide.classList.contains('minimized') ? '+' : '−';
+      });
+
+      // Check if speech synthesis is available
+      if (!speechSynthesis) {
+        statusDiv.textContent = 'ऑडियो समर्थित नहीं है';
+        playBtn.disabled = true;
+      }
+    }
+
+    function playHindiGuide() {
+      // Cancel any ongoing speech
+      speechSynthesis.cancel();
+
+      // Create new utterance
+      currentUtterance = new SpeechSynthesisUtterance(hindiGuideScript);
+      
+      // Set language to Hindi
+      currentUtterance.lang = 'hi-IN';
+      currentUtterance.rate = 0.9; // Slightly slower for clarity
+      currentUtterance.pitch = 1.0;
+      currentUtterance.volume = 1.0;
+
+      // Update UI
+      const playBtn = document.getElementById('playGuideBtn');
+      const stopBtn = document.getElementById('stopGuideBtn');
+      const statusDiv = document.getElementById('audioStatus');
+
+      // Event handlers
+      currentUtterance.onstart = function() {
+        isPlaying = true;
+        playBtn.style.display = 'none';
+        stopBtn.style.display = 'flex';
+        statusDiv.innerHTML = '<span class="pulse">🎙️ चल रहा है...</span>';
+      };
+
+      currentUtterance.onend = function() {
+        isPlaying = false;
+        playBtn.style.display = 'flex';
+        stopBtn.style.display = 'none';
+        statusDiv.textContent = 'पूर्ण हो गया';
+        setTimeout(() => {
+          statusDiv.textContent = 'तैयार है';
+        }, 2000);
+      };
+
+      currentUtterance.onerror = function(event) {
+        console.error('Speech synthesis error:', event);
+        isPlaying = false;
+        playBtn.style.display = 'flex';
+        stopBtn.style.display = 'none';
+        statusDiv.textContent = 'त्रुटि हुई';
+        setTimeout(() => {
+          statusDiv.textContent = 'तैयार है';
+        }, 2000);
+      };
+
+      // Speak
+      speechSynthesis.speak(currentUtterance);
+    }
+
+    function stopHindiGuide() {
+      speechSynthesis.cancel();
+      isPlaying = false;
+      
+      const playBtn = document.getElementById('playGuideBtn');
+      const stopBtn = document.getElementById('stopGuideBtn');
+      const statusDiv = document.getElementById('audioStatus');
+      
+      playBtn.style.display = 'flex';
+      stopBtn.style.display = 'none';
+      statusDiv.textContent = 'बंद कर दिया';
+      
+      setTimeout(() => {
+        statusDiv.textContent = 'तैयार है';
+      }, 1500);
+    }
+
+    // Show/hide audio guide based on active panel
+    function toggleAudioGuide(show) {
+      const audioGuide = document.getElementById('audioGuide');
+      if (show) {
+        audioGuide.classList.add('visible');
+      } else {
+        audioGuide.classList.remove('visible');
+        // Stop audio if playing when hiding
+        if (isPlaying) {
+          stopHindiGuide();
+        }
+      }
+    }
+
+    // Initialize audio guide when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      initAudioGuide();
+    });
+
+    // ============================================
+    // END AUDIO GUIDE FUNCTIONALITY
+    // ============================================
+
     // ----- Language Translations (6 Indian Languages) -----
     const translations = {
       en: {
@@ -751,6 +1258,11 @@
         resolve: "Resolve",
         showing: "Showing",
         issues: "issue(s)",
+        videoGuideTitle: "📹 How to Use - Video Tutorial",
+videoGuideDesc: "📖 Watch this video to learn:",
+videoPoint1: "How to login with OTP",
+videoPoint2: "How to report an issue with photos and location",
+videoPoint3: "How to track your complaint status",
         loaded: "Loaded"
       },
       hi: {
@@ -815,6 +1327,11 @@
         resolve: "हल करें",
         showing: "दिखाया जा रहा है",
         issues: "समस्याएं",
+        videoGuideTitle: "📹 उपयोग कैसे करें - वीडियो ट्यूटोरियल",
+videoGuideDesc: "📖 जानने के लिए यह वीडियो देखें:",
+videoPoint1: "ओटीपी से लॉगिन कैसे करें",
+videoPoint2: "फोटो और स्थान के साथ समस्या कैसे रिपोर्ट करें",
+videoPoint3: "अपनी शिकायत की स्थिति कैसे ट्रैक करें",
         loaded: "लोड किया गया"
       },
       bn: {
@@ -872,13 +1389,18 @@
         id: "আইডি",
         lat: "অক্ষাংশ",
         lng: "দ্রাঘিমাংশ",
-        photos: "ফটো",
+        photos: "ফোটো",
         actions: "পদক্ষেপ",
         assign: "নির্ধারণ",
         progress: "অগ্রগতিতে",
         resolve: "সমাধান",
         showing: "দেখানো হচ্ছে",
         issues: "সমস্যা",
+        videoGuideTitle: "📹 কীভাবে ব্যবহার করবেন - ভিডিও টিউটোরিয়াল",
+videoGuideDesc: "📖 শিখতে এই ভিডিওটি দেখুন:",
+videoPoint1: "OTP দিয়ে লগইন করার পদ্ধতি",
+videoPoint2: "ফটো এবং অবস্থান সহ সমস্যা রিপোর্ট করার পদ্ধতি",
+videoPoint3: "আপনার অভিযোগের স্থিতি ট্র্যাক করার পদ্ধতি",
         loaded: "লোড করা হয়েছে"
       },
       te: {
@@ -943,6 +1465,11 @@
         resolve: "పరిష్కరించండి",
         showing: "చూపిస్తోంది",
         issues: "సమస్యలు",
+        videoGuideTitle: "📹 ఎలా ఉపయోగించాలి - వీడియో ట్యుటోరియల్",
+videoGuideDesc: "📖 తెలుసుకోవడానికి ఈ వీడియో చూడండి:",
+videoPoint1: "OTP తో లాగిన్ ఎలా చేయాలి",
+videoPoint2: "ఫోటోలు మరియు స్థానంతో సమస్యను ఎలా నివేదించాలి",
+videoPoint3: "మీ ఫిర్యాదు స్థితిని ఎలా ట్రాక్ చేయాలి",
         loaded: "లోడ్ చేయబడింది"
       },
       mr: {
@@ -1007,6 +1534,11 @@
         resolve: "निराकरण करा",
         showing: "दर्शवित आहे",
         issues: "समस्या",
+        videoGuideTitle: "📹 कसे वापरावे - व्हिडिओ ट्यूटोरियल",
+videoGuideDesc: "📖 शिकण्यासाठी हा व्हिडिओ पहा:",
+videoPoint1: "OTP सह लॉगिन कसे करावे",
+videoPoint2: "फोटो आणि स्थानासह समस्या कशी नोंदवावी",
+videoPoint3: "आपल्या तक्रारीची स्थिती कशी ट्रॅक करावी",
         loaded: "लोड केले"
       },
       ta: {
@@ -1071,6 +1603,11 @@
         resolve: "தீர்",
         showing: "காட்டுகிறது",
         issues: "பிரச்சனைகள்",
+        videoGuideTitle: "📹 எப்படி பயன்படுத்துவது - வீடியோ டுடோரியல்",
+videoGuideDesc: "📖 அறிய இந்த வீடியோவைப் பார்க்கவும்:",
+videoPoint1: "OTP மூலம் எப்படி உள்நுழைவது",
+videoPoint2: "புகைப்படங்கள் மற்றும் இருப்பிடத்துடன் பிரச்சனையை எப்படி புகாரளிப்பது",
+videoPoint3: "உங்கள் புகாரின் நிலையை எப்படி கண்காணிப்பது",
         loaded: "ஏற்றப்பட்டது"
       }
     };
@@ -1131,12 +1668,26 @@
       document.getElementById('languageSelect').value = currentLang;
       switchLanguage(currentLang);
     });
+    // ============================================
+// VIDEO TUTORIAL TOGGLE
+// ============================================
+function toggleVideo() {
+  const videoTutorial = document.getElementById('videoTutorial');
+  videoTutorial.classList.toggle('expanded');
+}
 
     // ----- Panel Navigation -----
     function showPanel(panelName) {
       const panels = document.querySelectorAll(".panel");
       panels.forEach(p => p.classList.remove("active"));
       document.getElementById(panelName).classList.add("active");
+      
+      // Show audio guide ONLY on citizen portal
+      if (panelName === "citizen") {
+        toggleAudioGuide(true);
+      } else {
+        toggleAudioGuide(false);
+      }
       
       if (panelName === "admin") {
         setTimeout(() => map && map.invalidateSize(), 60);
